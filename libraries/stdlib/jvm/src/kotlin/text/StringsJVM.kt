@@ -560,6 +560,29 @@ public inline fun String.contentEquals(charSequence: CharSequence): Boolean = (t
 public inline fun String.contentEquals(stringBuilder: StringBuffer): Boolean = (this as java.lang.String).contentEquals(stringBuilder)
 
 /**
+ * Returns `true` if contents of this char sequence is equal to the contents of the specified [other],
+ * i.e. both char sequences contain the same number of the same characters in the same order.
+ *
+ * Note that this function does not compare specified char sequences in a synchronized block
+ * even if the [other] char sequence is an instance of [StringBuffer].
+ *
+ * @sample samples.text.Strings.contentEquals
+ */
+public actual infix fun CharSequence?.contentEquals(other: CharSequence?): Boolean = contentEqualsImpl(other, ignoreCase = false)
+
+/**
+ * Returns `true` if contents of this char sequence is equal to the contents of the specified [other], optionally ignoring case difference.
+ *
+ * Note that this function does not compare specified char sequences in a synchronized block
+ * even if the [other] char sequence is an instance of [StringBuffer].
+ *
+ * @param ignoreCase `true` to ignore character case when comparing contents.
+ *
+ * @sample samples.text.Strings.contentEquals
+ */
+public actual fun CharSequence?.contentEquals(other: CharSequence?, ignoreCase: Boolean): Boolean = contentEqualsImpl(other, ignoreCase)
+
+/**
  * Returns a canonical representation for this string object.
  */
 @kotlin.internal.InlineOnly
