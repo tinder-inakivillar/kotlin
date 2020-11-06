@@ -460,7 +460,7 @@ class Strings {
         val stringBuilder = StringBuilder()
         stringBuilder.append("Kot").append("lin")
         assertPrints(stringBuilder, "Kotlin")
-        assertTrue(stringBuilder.contentEquals("Kotlin"))
+        assertTrue(stringBuilder contentEquals "Kotlin")
 
         stringBuilder.setCharAt(0, 'k')
         assertPrints(stringBuilder, "kotlin")

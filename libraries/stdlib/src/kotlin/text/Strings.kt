@@ -1396,14 +1396,36 @@ public expect infix fun CharSequence?.contentEquals(other: CharSequence?): Boole
  */
 public expect fun CharSequence?.contentEquals(other: CharSequence?, ignoreCase: Boolean): Boolean
 
-internal fun CharSequence?.contentEqualsImpl(other: CharSequence?, ignoreCase: Boolean): Boolean {
+internal fun CharSequence?.contentEqualsIgnoreCaseImpl(other: CharSequence?): Boolean {
+    if (this is String && other is String) {
+        return this.equals(other, ignoreCase = true)
+    }
+
     if (this === other) return true
     if (this == null || other == null || this.length != other.length) return false
 
     for (i in 0 until length) {
-        if (!this[i].equals(other[i], ignoreCase)) {
+        if (!this[i].equals(other[i], ignoreCase = true)) {
             return false
         }
     }
+
+    return true
+}
+
+internal fun CharSequence?.contentEqualsImpl(other: CharSequence?): Boolean {
+    if (this is String && other is String) {
+        return this == other
+    }
+
+    if (this === other) return true
+    if (this == null || other == null || this.length != other.length) return false
+
+    for (i in 0 until length) {
+        if (this[i] != other[i]) {
+            return false
+        }
+    }
+
     return true
 }
