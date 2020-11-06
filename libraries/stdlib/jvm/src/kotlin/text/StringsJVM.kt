@@ -564,7 +564,7 @@ public inline fun String.contentEquals(stringBuilder: StringBuffer): Boolean = (
  * i.e. both char sequences contain the same number of the same characters in the same order.
  *
  * If this [CharSequence] is a [String] and [other] is not `null`
- * then behavior of this function is the same as [String.contentEquals] function.
+ * then this function behaves the same as [String.contentEquals].
  *
  * @sample samples.text.Strings.contentEquals
  */
@@ -579,7 +579,7 @@ public actual infix fun CharSequence?.contentEquals(other: CharSequence?): Boole
  * Returns `true` if contents of this char sequence is equal to the contents of the specified [other], optionally ignoring case difference.
  *
  * If this [CharSequence] is a [String], [other] is not `null` and [ignoreCase] is `false`
- * then behavior of this function is the same as [String.contentEquals] function.
+ * then this function behaves the same as [String.contentEquals].
  *
  * @param ignoreCase `true` to ignore character case when comparing contents.
  *
