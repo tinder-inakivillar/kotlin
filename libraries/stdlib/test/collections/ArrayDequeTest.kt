@@ -8,7 +8,6 @@ package test.collections
 import test.collections.behaviors.iteratorBehavior
 import test.collections.behaviors.listIteratorBehavior
 import test.collections.behaviors.listIteratorProperties
-import test.collections.compare
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.*
@@ -646,5 +645,33 @@ class ArrayDequeTest {
 
             assertEquals(Int.MAX_VALUE, ArrayDeque.newCapacity(oldCapacity, minCapacity))
         }
+    }
+
+    @Test
+    fun toArray() {
+        val deque = ArrayDeque<Int>()
+
+        // empty
+        assertTrue(deque.toArray().isEmpty())
+
+        // head < tail
+        deque.addAll(listOf(0, 1, 2, 3))
+        deque.internalStructure { head, _ -> assertEquals(0, head) }
+        assertTrue(arrayOf(0, 1, 2, 3) contentEquals deque.toArray())
+        deque.removeFirst()
+        deque.internalStructure { head, _ -> assertEquals(1, head) }
+        assertTrue(arrayOf(1, 2, 3) contentEquals deque.toArray())
+
+        // head > tail
+        deque.addFirst(-1)
+        deque.addFirst(-2)
+        deque.addFirst(-3)
+        deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
+        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3) contentEquals deque.toArray())
+
+        // head == tail
+        deque.addAll(listOf(4, 5, 6, 7))
+        deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
+        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3, 4, 5, 6, 7) contentEquals deque.toArray())
     }
 }

@@ -529,6 +529,31 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
         size = 0
     }
 
+    @Suppress("NOTHING_TO_OVERRIDE")
+    public override fun <T> toArray(destination: Array<T?>): Array<T?> {
+        @Suppress("UNCHECKED_CAST")
+        val dest = if (destination.size >= size) destination as Array<Any?> else arrayOfNulls<Any?>(size)
+
+        val tail = internalIndex(size)
+        if (head < tail) {
+            elementData.copyInto(dest, startIndex = head, endIndex = tail)
+        } else if (isNotEmpty()) {
+            elementData.copyInto(dest, destinationOffset = 0, startIndex = head, endIndex = elementData.size)
+            elementData.copyInto(dest, destinationOffset = elementData.size - head, startIndex = 0, endIndex = tail)
+        }
+        if (dest.size > size) {
+            dest[size] = null // null-terminate
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return dest as Array<T?>
+    }
+
+    @Suppress("NOTHING_TO_OVERRIDE")
+    public override fun toArray(): Array<Any?> {
+        return toArray(arrayOfNulls<Any?>(size))
+    }
+
     internal companion object {
         private val emptyElementData = emptyArray<Any?>()
         private const val maxArraySize = Int.MAX_VALUE - 8
@@ -548,20 +573,7 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
     // For testing only
     internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
         val tail = internalIndex(size)
-
-        if (isEmpty()) {
-            structure(head, emptyArray())
-            return
-        }
-
-        val elements = arrayOfNulls<Any?>(size)
-        if (head < tail) {
-            elementData.copyInto(elements, startIndex = head, endIndex = tail)
-            structure(head, elements)
-        } else {
-            elementData.copyInto(elements, startIndex = head)
-            elementData.copyInto(elements, elementData.size - head, startIndex = 0, endIndex = tail)
-            structure(head - elementData.size, elements)
-        }
+        val head = if (isEmpty() || head < tail) head else head - elementData.size
+        structure(head, toArray())
     }
 }
