@@ -7,16 +7,20 @@
 // usages in build scripts are not tracked properly
 @file:Suppress("unused")
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.internal.tasks.testing.filter.DefaultTestFilter
+import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.support.serviceOf
+import org.jetbrains.kotlin.gradle.utils.NativeCompilerDownloader
+import org.jetbrains.kotlin.konan.CompilerVersion
 import java.io.File
 import java.lang.Character.isLowerCase
 import java.lang.Character.isUpperCase
@@ -273,4 +277,54 @@ fun Task.useAndroidSdk() {
 
 fun Task.useAndroidJar() {
     TaskUtils.useAndroidJar(this)
+}
+
+// Moved out of buildscript kts of :native:kotlin-klib-commonizer-api to resolve compilation error on Gradle 6.8.2
+abstract class DownloadNativeCompiler : DefaultTask() {
+    @TaskAction
+    fun download() {
+        NativeCompilerDownloader(project).downloadIfNeeded()
+    }
+}
+
+fun Test.setKotlinCompilerEnvironmentVariable() {
+    /**
+     * TODO: This version hack on migrating period K/N into repository Kotlin, in new build infrostructure zero maintance claus isn't dropped,
+     * so for old builds we need to keep this version to string representation till total switch on new infrostructure.
+     */
+    val konanVersion = object: CompilerVersion by NativeCompilerDownloader.DEFAULT_KONAN_VERSION {
+        override fun toString(showMeta: Boolean, showBuild: Boolean) = buildString {
+            if (major > 1
+                || minor > 5
+                || maintenance > 20
+            )
+                return NativeCompilerDownloader.DEFAULT_KONAN_VERSION.toString(showMeta, showBuild)
+            append(major)
+            append('.')
+            append(minor)
+            if (maintenance != 0) {
+                append('.')
+                append(maintenance)
+            }
+            if (milestone != -1) {
+                append("-M")
+                append(milestone)
+            }
+            if (showMeta) {
+                append('-')
+                append(meta.metaString)
+            }
+            if (showBuild && build != -1) {
+                append('-')
+                append(build)
+            }
+        }
+
+        override fun toString() = toString(
+            meta != org.jetbrains.kotlin.konan.MetaVersion.RELEASE,
+            meta != org.jetbrains.kotlin.konan.MetaVersion.RELEASE
+        )
+    }
+
+    environment("KONAN_HOME", NativeCompilerDownloader(project, konanVersion).compilerDirectory.absolutePath)
 }

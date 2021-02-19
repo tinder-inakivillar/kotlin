@@ -184,6 +184,8 @@ dependencies {
     if (kotlinBuildProperties.isInJpsBuildIdeaSync) {
         implementation("org.jetbrains.kotlin:kotlin-native-utils:${project.bootstrapKotlinVersion}")
     }
+
+    compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable:${project.bootstrapKotlinVersion}")
 }
 
 samWithReceiver {
