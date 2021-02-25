@@ -1,8 +1,6 @@
 package foo
 
-import test.A.Companion.COMPANION_VALUE
+import test.A.Companion.CONSTANT_VALUE
 
-fun callCompanionConstant() {
-    println("Import companion constant: ${COMPANION_VALUE}")
-}
+fun importCompanionConstant() = "Import companion constant: ${CONSTANT_VALUE}"
 

@@ -1,0 +1,12 @@
+================ Step #1 =================
+
+Cleaning output files:
+
+End of files
+Compiling files:
+  src/A.kt
+  src/companionUsage.kt
+  src/constantUsage.kt
+End of files
+Exit code: OK
+------------------------------------------
