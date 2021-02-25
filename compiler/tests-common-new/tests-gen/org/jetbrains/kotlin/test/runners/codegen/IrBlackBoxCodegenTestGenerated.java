@@ -1329,6 +1329,12 @@ public class IrBlackBoxCodegenTestGenerated extends AbstractIrBlackBoxCodegenTes
         }
 
         @Test
+        @TestMetadata("boxWithIntegerValueTypeReceiver.kt")
+        public void testBoxWithIntegerValueTypeReceiver() throws Exception {
+            runTest("compiler/testData/codegen/box/binaryOp/boxWithIntegerValueTypeReceiver.kt");
+        }
+
+        @Test
         @TestMetadata("call.kt")
         public void testCall() throws Exception {
             runTest("compiler/testData/codegen/box/binaryOp/call.kt");

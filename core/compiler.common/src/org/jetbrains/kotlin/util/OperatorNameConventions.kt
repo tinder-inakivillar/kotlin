@@ -48,6 +48,7 @@ object OperatorNameConventions {
 
     @JvmField val UNARY_MINUS = Name.identifier("unaryMinus")
     @JvmField val UNARY_PLUS = Name.identifier("unaryPlus")
+    @JvmField val INV = Name.identifier("inv")
 
     @JvmField val TIMES = Name.identifier("times")
     @JvmField val DIV = Name.identifier("div")

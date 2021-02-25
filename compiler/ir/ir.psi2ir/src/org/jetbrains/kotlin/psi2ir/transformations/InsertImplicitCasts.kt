@@ -52,6 +52,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.typeUtil.*
+import org.jetbrains.kotlin.util.OperatorNameConventions
 
 fun insertImplicitCasts(element: IrElement, context: GeneratorContext) {
     InsertImplicitCasts(
@@ -402,6 +403,11 @@ internal class InsertImplicitCasts(
     private fun IrExpression.coerceIntToAnotherIntegerType(targetType: KotlinType): IrExpression {
         if (!type.originalKotlinType!!.isInt()) throw AssertionError("Expression of type 'kotlin.Int' expected: $this")
         if (targetType.isInt()) return this
+
+        if (generatorExtensions.shouldPreventDeprecatedUnaryOperatorIntegerValueTypeConversion &&
+            this is IrCall && preventDeprecatedUnaryOperatorIntegerValueTypeConversion(symbol.descriptor)
+        ) return this
+
         return if (this is IrConst<*>) {
             val value = this.value as Int
             val irType = targetType.toIrType()
@@ -427,6 +433,17 @@ internal class InsertImplicitCasts(
                 else -> throw AssertionError("Unexpected target type for integer coercion: $targetType")
             }
         }
+    }
+
+    private fun preventDeprecatedUnaryOperatorIntegerValueTypeConversion(descriptor: CallableDescriptor): Boolean {
+        // in JVM, we don't convert values resulted from calling unary operators 'inv', 'unaryPlus', 'unaryMinus' to another integer type.
+        // The reason is that doing so would change behavior which we want to avoid, see KT-42321.
+        // At the same time, such structure seems possible to achieve only via the magical integer value type, but inferring the result of
+        // the unary call based on an expected type is deprecated behavior which is going to be removed in the future, see KT-38895.
+        val name = descriptor.name
+        return (name == OperatorNameConventions.INV || name == OperatorNameConventions.UNARY_MINUS ||
+                name == OperatorNameConventions.UNARY_PLUS) &&
+                descriptor.dispatchReceiverParameter?.type?.let { KotlinBuiltIns.isPrimitiveType(it) } == true
     }
 
     private fun IrExpression.invokeIntegerCoercionFunction(targetType: KotlinType, coercionFunName: String): IrExpression {
