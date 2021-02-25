@@ -217,7 +217,7 @@ fun Project.projectTest(
 
         if (parallel && !jUnit5Enabled) {
             maxParallelForks =
-                project.findProperty("kotlin.test.maxParallelForks")?.toString()?.toInt()
+                project.providers.gradleProperty("kotlin.test.maxParallelForks").forUseAtConfigurationTime().orNull?.toInt()
                     ?: (Runtime.getRuntime().availableProcessors() / if (kotlinBuildProperties.isTeamcityBuild) 2 else 4).coerceAtLeast(1)
         }
     }.apply { configure(body) }
