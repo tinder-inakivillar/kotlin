@@ -6,7 +6,7 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://maven.google.com' }
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$android_tools_version"
@@ -21,7 +21,7 @@ allprojects {
     repositories {
         mavenLocal()
         maven { url 'https://maven.google.com' }
-        jcenter()
+        mavenCentral()
     }
 
     if (VersionNumber.parse(android_tools_version) >= VersionNumber.parse("3.3.0")) {
