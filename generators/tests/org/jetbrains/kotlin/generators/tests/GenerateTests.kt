@@ -46,6 +46,7 @@ import org.jetbrains.kotlin.idea.codeInsight.postfix.AbstractPostfixTemplateProv
 import org.jetbrains.kotlin.idea.codeInsight.surroundWith.AbstractSurroundWithTest
 import org.jetbrains.kotlin.idea.codeInsight.unwrap.AbstractUnwrapRemoveTest
 import org.jetbrains.kotlin.idea.completion.AbstractHighLevelJvmBasicCompletionTest
+import org.jetbrains.kotlin.idea.completion.AbstractHighLevelMultiFileJvmBasicCompletionTest
 import org.jetbrains.kotlin.idea.completion.test.*
 import org.jetbrains.kotlin.idea.completion.test.handlers.*
 import org.jetbrains.kotlin.idea.completion.test.weighers.AbstractBasicCompletionWeigherTest
@@ -1137,6 +1138,10 @@ fun main(args: Array<String>) {
             testClass<AbstractHighLevelWeigherTest> {
                 model("weighers/basic", pattern = KT_OR_KTS_WITHOUT_DOTS_IN_NAME)
             }
+
+            testClass<AbstractHighLevelMultiFileJvmBasicCompletionTest> {
+                model("basic/multifile", extension = null, recursive = false)
+            }
         }
 
         testGroup("idea/idea-fir/tests", "idea/testData/findUsages") {
@@ -1350,10 +1355,6 @@ fun main(args: Array<String>) {
 
             testClass<AbstractMultiFileJvmBasicCompletionTest> {
                 model("basic/multifile", extension = null, recursive = false)
-            }
-
-            testClass<AbstractMultiFileJvmBasicCompletionTest>("MultiFilePrimitiveJvmBasicCompletionTestGenerated") {
-                model("basic/multifilePrimitive", extension = null, recursive = false)
             }
 
             testClass<AbstractMultiFileSmartCompletionTest> {
