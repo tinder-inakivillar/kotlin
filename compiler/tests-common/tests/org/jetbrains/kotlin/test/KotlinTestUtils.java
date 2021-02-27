@@ -276,6 +276,25 @@ public class KotlinTestUtils {
         assertEqualsToFile(expectedFile, actual, s -> s);
     }
 
+    public static void assertEqualsToFileIgnoreOrder(@NotNull File expectedFile, @NotNull Collection<String> actual) {
+        try {
+            if (!expectedFile.exists()) {
+                FileUtil.writeToFile(expectedFile, String.join("\n", actual));
+                Assert.fail("Expected data file did not exist. Generating: " + expectedFile);
+            }
+            List<String> expected = FileUtil.loadLines(expectedFile, CharsetToolkit.UTF8);
+
+            if (!Comparing.haveEqualElements(expected, actual)) {
+                String expectedStr = String.join("\n", expected);
+                String actualStr = String.join("\n", actual);
+                throw new FileComparisonFailure("Actual data differs from file content" + ": " + expectedFile.getName(),
+                                                expectedStr, actualStr, expectedFile.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            throw ExceptionUtilsKt.rethrow(e);
+        }
+    }
+
     public static void assertEqualsToFile(@NotNull String message, @NotNull File expectedFile, @NotNull String actual) {
         assertEqualsToFile(message, expectedFile, actual, s -> s);
     }
