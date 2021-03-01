@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.idea.util.sourceRoots
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import org.jetbrains.kotlin.test.util.KtTestUtil
+import org.jetbrains.kotlin.types.typeUtil.closure
 import java.io.File
 import java.nio.file.Paths
 
@@ -31,11 +32,12 @@ import java.nio.file.Paths
  */
 abstract class AbstractFirSealedInheritorsTest : AbstractMultiModuleTest() {
     override fun getTestDataPath(): String =
-            "${KtTestUtil.getHomeDirectory()}/idea/idea-frontend-fir/idea-fir-low-level-api/testdata/resolveSealed/"
+        "${KtTestUtil.getHomeDirectory()}/idea/idea-frontend-fir/idea-fir-low-level-api/testdata/resolveSealed/"
 
     fun doTest(path: String) {
         val testStructure = TestProjectStructureForSealed.fromTestProjectStructure(
-                TestProjectStructureReader.read(Paths.get(path)))
+            TestProjectStructureReader.read(Paths.get(path))
+        )
 
         val testProjectModule = testStructure.module
         val moduleToResolve = module(testProjectModule.name)
@@ -43,20 +45,26 @@ abstract class AbstractFirSealedInheritorsTest : AbstractMultiModuleTest() {
         val fileToAnalysePath = moduleToResolve.sourceRoots.first().url + "/" + testStructure.fileToResolve.relativeFilePath
 
         val virtualFileToAnalyse = VirtualFileManager.getInstance().findFileByUrl(fileToAnalysePath)
-                ?: error("File ${testStructure.fileToResolve.filePath} not found")
+            ?: error("File ${testStructure.fileToResolve.filePath} not found")
         val ktFileToAnalyse = PsiManager.getInstance(project).findFile(virtualFileToAnalyse) as KtFile
         val resolveState = ktFileToAnalyse.getResolveState()
 
         val inheritorIds = executeOnPooledThreadInReadAction {
-            val fir = ktFileToAnalyse.getOrBuildFir(resolveState) as FirFile
-            fir.declarations
-                .filter { it is FirRegularClass && it.isSealed }
-                .flatMap { (it as FirRegularClass).sealedInheritors ?: emptyList() }
-                .toList()
+            val firFile = ktFileToAnalyse.getOrBuildFir(resolveState) as FirFile
+            val allClasses = firFile.listNestedClasses().closure { it.listNestedClasses() }
+            allClasses.flatMap { it.sealedInheritors ?: emptyList() }.toList()
         }
 
         val inheritorNames = inheritorIds?.map { it.asString() }?.toList() ?: emptyList()
         KotlinTestUtils.assertEqualsToFileIgnoreOrder(File("$path/expected.txt"), inheritorNames)
+    }
+}
+
+private fun FirDeclaration.listNestedClasses(): List<FirRegularClass> {
+    return when (this) {
+        is FirFile -> declarations.filterIsInstance<FirRegularClass>()
+        is FirRegularClass -> declarations.filterIsInstance<FirRegularClass>()
+        else -> emptyList()
     }
 }
 
@@ -67,16 +75,16 @@ private data class FileToResolveForSealed(val moduleName: String, val relativeFi
         fun parse(json: JsonElement): FileToResolveForSealed {
             require(json is JsonObject)
             return FileToResolveForSealed(
-                    moduleName = json.getString("module"),
-                    relativeFilePath = json.getString("file")
+                moduleName = json.getString("module"),
+                relativeFilePath = json.getString("file")
             )
         }
     }
 }
 
 private data class TestProjectStructureForSealed(
-        val module: TestProjectModule,
-        val fileToResolve: FileToResolveForSealed
+    val module: TestProjectModule,
+    val fileToResolve: FileToResolveForSealed
 ) {
     companion object {
         fun fromTestProjectStructure(testProjectStructure: TestProjectStructure): TestProjectStructureForSealed {

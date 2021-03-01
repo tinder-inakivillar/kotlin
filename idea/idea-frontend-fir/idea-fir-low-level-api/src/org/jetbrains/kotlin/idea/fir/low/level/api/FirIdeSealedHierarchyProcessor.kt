@@ -31,8 +31,8 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade
 
 
-class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSession)
-    : FirTransformerBasedResolveProcessor(session, scopeSession) {
+class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSession) :
+    FirTransformerBasedResolveProcessor(session, scopeSession) {
 
     override val transformer: FirTransformer<Nothing?> = SealedClassInheritorsTransformer()
 
@@ -60,16 +60,17 @@ class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSes
         }
 
         override fun visitRegularClass(regularClass: FirRegularClass, data: MutableMap<FirRegularClass, MutableList<ClassId>>) {
-            if (!regularClass.isSealed) return
+            if (!regularClass.isSealed)
+                regularClass.acceptChildren(this, data)
 
             val sealedKtClass = regularClass.psi as? KtClass ?: return
             val module = sealedKtClass.module ?: return
             val containingPackage = regularClass.classId.packageFqName
 
             val psiPackage = KotlinJavaPsiFacade.getInstance(sealedKtClass.project)
-                    .findPackage(containingPackage.asString(), GlobalSearchScope.moduleScope(module))
-                    ?: getPackageViaDirectoryService(sealedKtClass)
-                    ?: return
+                .findPackage(containingPackage.asString(), GlobalSearchScope.moduleScope(module))
+                ?: getPackageViaDirectoryService(sealedKtClass)
+                ?: return
 
             val packageScope = PackageScope(psiPackage, false, false)
             val searchScope: SearchScope = module.moduleScope.intersectWith(packageScope) // MPP multiple common modules are not supported!!
@@ -79,8 +80,8 @@ class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSes
 
             val searchParameters = ClassInheritorsSearch.SearchParameters(lightClass, searchScope, false, true, false)
             val subclasses = ClassInheritorsSearch.search(searchParameters)
-                    .mapNotNull { it.classIdIfNonLocal() }
-                    .toMutableList()
+                .mapNotNull { it.classIdIfNonLocal() }
+                .toMutableList()
 
             data[regularClass] = subclasses
         }
