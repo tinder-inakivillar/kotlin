@@ -55,8 +55,8 @@ abstract class AbstractFirSealedInheritorsTest : AbstractMultiModuleTest() {
             allClasses.flatMap { it.sealedInheritors ?: emptyList() }.toList()
         }
 
-        val inheritorNames = inheritorIds?.map { it.asString() }?.toList() ?: emptyList()
-        KotlinTestUtils.assertEqualsToFileIgnoreOrder(File("$path/expected.txt"), inheritorNames)
+        val inheritorNames = inheritorIds?.map { it.asString() }?.toList()?.sorted() ?: emptyList()
+        KotlinTestUtils.assertEqualsToFile(File("$path/expected.txt"), inheritorNames.joinToString("\n"))
     }
 }
 
