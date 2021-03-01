@@ -18,7 +18,6 @@ internal class FirPhaseRunner {
     private val superTypesBodyResolveLock = ReentrantLock()
     private val statusResolveLock = ReentrantLock()
     private val implicitTypesResolveLock = ReentrantLock()
-    private val sealedInheritorsResolveLock = ReentrantLock()
 
     fun runPhase(firFile: FirFile, phase: FirResolvePhase, scopeSession: ScopeSession) = when (phase) {
         FirResolvePhase.SUPER_TYPES -> superTypesBodyResolveLock.withLock {
@@ -28,9 +27,6 @@ internal class FirPhaseRunner {
             runPhaseWithoutLock(firFile, phase, scopeSession)
         }
         FirResolvePhase.IMPLICIT_TYPES_BODY_RESOLVE -> implicitTypesResolveLock.withLock {
-            runPhaseWithoutLock(firFile, phase, scopeSession)
-        }
-        FirResolvePhase.SEALED_CLASS_INHERITORS -> sealedInheritorsResolveLock.withLock {
             runPhaseWithoutLock(firFile, phase, scopeSession)
         }
         else -> {
