@@ -34,10 +34,10 @@ import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade
 class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSession) :
     FirTransformerBasedResolveProcessor(session, scopeSession) {
 
-    override val transformer: FirTransformer<Nothing?> = SealedClassInheritorsTransformer()
+    override val transformer: FirTransformer<Nothing?> = SealedClassInheritorsTransformer
 
 
-    private class SealedClassInheritorsTransformer : FirTransformer<Nothing?>() {
+    private object SealedClassInheritorsTransformer : FirTransformer<Nothing?>() {
         override fun <E : FirElement> transformElement(element: E, data: Nothing?): CompositeTransformResult<E> {
             throw IllegalStateException("Should not be there")
         }
