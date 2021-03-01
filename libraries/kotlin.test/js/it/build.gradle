@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages
 
 plugins {
-    id "com.github.node-gradle.node" version "2.2.0"
+    id "com.github.node-gradle.node" version "3.0.1"
 }
 
 description = 'Kotlin-test integration tests for JS'
@@ -53,7 +53,7 @@ node {
 }
 
 def createFrameworkTest(def name) {
-    return tasks.create("test$name", NpmTask) {
+    return tasks.register("test$name", NpmTask) {
         dependsOn(compileTestKotlin2Js, populateNodeModules, npmInstall)
         def lowerName = name.toLowerCase()
         def tcOutput = "$buildDir/tc-${lowerName}.log"
@@ -66,16 +66,12 @@ def createFrameworkTest(def name) {
         args = ['run', "test-$lowerName"]
         group = 'verification'
         execOverrides {
-            it.ignoreExitValue = true
+            it.ignoreExitValue = rootProject.ignoreTestFailures
             it.standardOutput = new FileOutputStream(stdOutput)
             it.errorOutput = new FileOutputStream(errOutput)
         }
         doLast {
             println file(tcOutput).text
-            if (result.exitValue != 0 && !rootProject.ignoreTestFailures) {
-                throw new GradleException("$name integration test failed")
-            }
-
         }
     }
 }
