@@ -60,8 +60,10 @@ class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSes
         }
 
         override fun visitRegularClass(regularClass: FirRegularClass, data: MutableMap<FirRegularClass, MutableList<ClassId>>) {
-            if (!regularClass.isSealed)
+            if (!regularClass.isSealed) {
                 regularClass.acceptChildren(this, data)
+                return
+            }
 
             val sealedKtClass = regularClass.psi as? KtClass ?: return
             val module = sealedKtClass.module ?: return
