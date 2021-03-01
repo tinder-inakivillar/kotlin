@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.idea.fir.low.level.api
 
+import com.intellij.openapi.module.Module
 import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.PsiPackage
 import com.intellij.psi.search.GlobalSearchScope
@@ -74,18 +75,22 @@ class FirIdeSealedHierarchyProcessor(session: FirSession, scopeSession: ScopeSes
                 ?: getPackageViaDirectoryService(sealedKtClass)
                 ?: return
 
-            val packageScope = PackageScope(psiPackage, false, false)
-            val searchScope: SearchScope = module.moduleScope.intersectWith(packageScope) // MPP multiple common modules are not supported!!
-
             val kotlinAsJavaSupport = KotlinAsJavaSupport.getInstance(sealedKtClass.project)
             val lightClass = sealedKtClass.toLightClass() ?: kotlinAsJavaSupport.getFakeLightClass(sealedKtClass)
 
+            val searchScope: SearchScope = getSearchScope(module, psiPackage)
             val searchParameters = ClassInheritorsSearch.SearchParameters(lightClass, searchScope, false, true, false)
             val subclasses = ClassInheritorsSearch.search(searchParameters)
                 .mapNotNull { it.classIdIfNonLocal() }
                 .toMutableList()
 
             data[regularClass] = subclasses
+        }
+
+        private fun getSearchScope(module: Module, psiPackage: PsiPackage): GlobalSearchScope {
+            val packageScope = PackageScope(psiPackage, false, false)
+            // MPP multiple common modules are not supported!!
+            return module.moduleScope.intersectWith(packageScope)
         }
     }
 }
