@@ -530,9 +530,9 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
     }
 
     @Suppress("NOTHING_TO_OVERRIDE")
-    public override fun <T> toArray(destination: Array<T?>): Array<T?> {
+    override fun <T> toArray(array: Array<T>): Array<T> {
         @Suppress("UNCHECKED_CAST")
-        val dest = if (destination.size >= size) destination as Array<Any?> else arrayOfNulls<Any?>(size)
+        val dest = if (array.size >= size) array as Array<Any?> else arrayOfNulls<Any?>(size)
 
         val tail = internalIndex(size)
         if (head < tail) {
@@ -546,11 +546,11 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
         }
 
         @Suppress("UNCHECKED_CAST")
-        return dest as Array<T?>
+        return dest as Array<T>
     }
 
     @Suppress("NOTHING_TO_OVERRIDE")
-    public override fun toArray(): Array<Any?> {
+    override fun toArray(): Array<Any?> {
         return toArray(arrayOfNulls<Any?>(size))
     }
 
