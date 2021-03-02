@@ -164,6 +164,25 @@ actual class ArrayList<E> private constructor(
         return array.subarrayContentToString(offset, length)
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> toArray(destination: Array<T>): Array<T> {
+        if (destination.size < length) {
+            return array.copyOfRange(fromIndex = offset, toIndex = offset + length) as Array<T>
+        }
+
+        (array as Array<T>).copyInto(destination, 0, startIndex = offset, endIndex = offset + length)
+
+        if (destination.size > length) {
+            destination[length] = null as T // null-terminate
+        }
+
+        return destination
+    }
+
+    override fun toArray(): Array<E> {
+        return array.copyOfRange(fromIndex = offset, toIndex = offset + length)
+    }
+
     // ---------------------------- private ----------------------------
 
     private fun checkElementIndex(index: Int) {
