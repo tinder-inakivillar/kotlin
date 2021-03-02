@@ -110,7 +110,7 @@ class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDepend
     }
 
     private inner class LibraryUsageIndex {
-        private val modulesLibraryIsUsedIn: MultiMap<Library, Module> = MultiMap.createSet()
+        private val modulesLibraryIsUsedIn: MultiMap<Library, Module> = MultiMap.createLinkedSet() // tmp; for the stable test failure
 
         init {
             for (module in ModuleManager.getInstance(project).modules) {
@@ -125,6 +125,10 @@ class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDepend
             }
         }
 
+        // tmp; for the stable test failure
+        fun getModulesLibraryIsUsedIn(libraryInfo: LibraryInfo): Collection<Module> = modulesLibraryIsUsedIn[libraryInfo.library].reversed()
+
+        /*
         fun getModulesLibraryIsUsedIn(libraryInfo: LibraryInfo) = sequence<Module> {
             val ideaModelInfosCache = getIdeaModelInfosCache(project)
             for (module in modulesLibraryIsUsedIn[libraryInfo.library]) {
@@ -134,5 +138,6 @@ class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDepend
                 }
             }
         }
+        */
     }
 }
