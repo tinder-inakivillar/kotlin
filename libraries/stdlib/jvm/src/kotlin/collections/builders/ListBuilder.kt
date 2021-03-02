@@ -165,7 +165,6 @@ internal class ListBuilder<E> private constructor(
 
     // ---------------------------- private ----------------------------
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun ensureCapacity(minCapacity: Int) {
         if (backing != null) throw IllegalStateException() // just in case somebody casts subList to ListBuilder
         if (minCapacity > array.size) {
