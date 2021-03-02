@@ -11,7 +11,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.executeOnPooledThreadInReadAction
 import org.jetbrains.kotlin.fir.declarations.*
-import org.jetbrains.kotlin.idea.fir.low.level.api.api.getOrBuildFir
+import org.jetbrains.kotlin.idea.fir.low.level.api.api.getOrBuildFirOfType
 import org.jetbrains.kotlin.idea.fir.low.level.api.api.getResolveState
 import org.jetbrains.kotlin.idea.jsonUtils.getString
 import org.jetbrains.kotlin.idea.stubs.AbstractMultiModuleTest
@@ -50,7 +50,7 @@ abstract class AbstractFirSealedInheritorsTest : AbstractMultiModuleTest() {
         val resolveState = ktFileToAnalyse.getResolveState()
 
         val inheritorIds = executeOnPooledThreadInReadAction {
-            val firFile = ktFileToAnalyse.getOrBuildFir(resolveState) as FirFile
+            val firFile = ktFileToAnalyse.getOrBuildFirOfType<FirFile>(resolveState)
             val allClasses = firFile.listNestedClasses().closure { it.listNestedClasses() }
             allClasses.flatMap { it.sealedInheritors ?: emptyList() }.toList()
         }
