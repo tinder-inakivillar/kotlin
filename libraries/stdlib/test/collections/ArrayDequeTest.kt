@@ -654,24 +654,39 @@ class ArrayDequeTest {
         // empty
         assertTrue(deque.testToArray().isEmpty())
 
+        fun testContentEquals(expected: Array<Int>) {
+            assertTrue(expected contentEquals deque.testToArray())
+            assertTrue(expected contentEquals deque.testToArray(emptyArray()))
+
+            val dest = Array(expected.size + 2) { it + 100 }
+
+            @Suppress("UNCHECKED_CAST")
+            val nullTerminatedExpected = (expected as Array<Any?>) + null + (expected.size + 101)
+            val actual = deque.testToArray(dest)
+            assertTrue(
+                nullTerminatedExpected contentEquals actual,
+                message = "Expected: ${nullTerminatedExpected.contentToString()}, Actual: ${actual.contentToString()}"
+            )
+        }
+
         // head < tail
         deque.addAll(listOf(0, 1, 2, 3))
         deque.internalStructure { head, _ -> assertEquals(0, head) }
-        assertTrue(arrayOf(0, 1, 2, 3) contentEquals deque.testToArray())
+        testContentEquals(arrayOf(0, 1, 2, 3))
         deque.removeFirst()
         deque.internalStructure { head, _ -> assertEquals(1, head) }
-        assertTrue(arrayOf(1, 2, 3) contentEquals deque.testToArray())
+        testContentEquals(arrayOf(1, 2, 3))
 
         // head > tail
         deque.addFirst(-1)
         deque.addFirst(-2)
         deque.addFirst(-3)
         deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
-        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3) contentEquals deque.testToArray())
+        testContentEquals(arrayOf(-3, -2, -1, 1, 2, 3))
 
         // head == tail
         deque.addAll(listOf(4, 5, 6, 7))
         deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
-        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3, 4, 5, 6, 7) contentEquals deque.testToArray())
+        testContentEquals(arrayOf(-3, -2, -1, 1, 2, 3, 4, 5, 6, 7))
     }
 }
