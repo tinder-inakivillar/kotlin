@@ -1,6 +1,7 @@
 {
   "modules" : [
-    { "name": "main" }
+    { "name": "main", "dependsOn": ["anotherModule"] },
+    { "name": "anotherModule"}
   ],
   "fileToResolve": { "module": "main", "file": "main.kt" }
 }
