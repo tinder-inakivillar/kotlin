@@ -652,26 +652,26 @@ class ArrayDequeTest {
         val deque = ArrayDeque<Int>()
 
         // empty
-        assertTrue(deque.toArray().isEmpty())
+        assertTrue(deque.testToArray().isEmpty())
 
         // head < tail
         deque.addAll(listOf(0, 1, 2, 3))
         deque.internalStructure { head, _ -> assertEquals(0, head) }
-        assertTrue(arrayOf(0, 1, 2, 3) contentEquals deque.toArray())
+        assertTrue(arrayOf(0, 1, 2, 3) contentEquals deque.testToArray())
         deque.removeFirst()
         deque.internalStructure { head, _ -> assertEquals(1, head) }
-        assertTrue(arrayOf(1, 2, 3) contentEquals deque.toArray())
+        assertTrue(arrayOf(1, 2, 3) contentEquals deque.testToArray())
 
         // head > tail
         deque.addFirst(-1)
         deque.addFirst(-2)
         deque.addFirst(-3)
         deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
-        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3) contentEquals deque.toArray())
+        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3) contentEquals deque.testToArray())
 
         // head == tail
         deque.addAll(listOf(4, 5, 6, 7))
         deque.internalStructure { head, _ -> assertEquals(-2, head) } // deque min capacity is 10
-        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3, 4, 5, 6, 7) contentEquals deque.toArray())
+        assertTrue(arrayOf(-3, -2, -1, 1, 2, 3, 4, 5, 6, 7) contentEquals deque.testToArray())
     }
 }

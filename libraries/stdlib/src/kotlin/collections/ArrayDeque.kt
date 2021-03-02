@@ -554,6 +554,10 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
         return toArray(arrayOfNulls<Any?>(size))
     }
 
+    // for testing
+    internal fun <T> testToArray(array: Array<T>): Array<T> = toArray(array)
+    internal fun testToArray(): Array<Any?> = toArray()
+
     internal companion object {
         private val emptyElementData = emptyArray<Any?>()
         private const val maxArraySize = Int.MAX_VALUE - 8
