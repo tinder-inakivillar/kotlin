@@ -130,15 +130,17 @@ internal class ListBuilder<E> private constructor(
         return ListBuilder(array, offset + fromIndex, toIndex - fromIndex, isReadOnly, this, root ?: this)
     }
 
-    override fun <T> toArray(destination: Array<T?>): Array<T?> {
+    override fun <T> toArray(destination: Array<T>): Array<T> {
         if (destination.size < length) {
             return java.util.Arrays.copyOfRange(array, offset, offset + length, destination.javaClass)
         }
 
         @Suppress("UNCHECKED_CAST")
         (array as Array<T>).copyInto(destination, 0, startIndex = offset, endIndex = offset + length)
+
         if (destination.size > length) {
-            destination[length] = null // null-terminate
+            @Suppress("UNCHECKED_CAST")
+            destination[length] = null as T // null-terminate
         }
 
         return destination
