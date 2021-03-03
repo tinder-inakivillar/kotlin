@@ -532,7 +532,7 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
     @Suppress("NOTHING_TO_OVERRIDE")
     override fun <T> toArray(array: Array<T>): Array<T> {
         @Suppress("UNCHECKED_CAST")
-        val dest = if (array.size >= size) array as Array<Any?> else arrayOfNulls<Any?>(size)
+        val dest = (if (array.size >= size) array else arrayOfNulls(array, size)) as Array<Any?>
 
         val tail = internalIndex(size)
         if (head < tail) {
