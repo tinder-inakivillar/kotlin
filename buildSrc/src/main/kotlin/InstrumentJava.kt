@@ -22,9 +22,7 @@ class InstrumentJava(@Transient val javaInstrumentator: Configuration, @Transien
     }
 
     override fun execute(task: Task) {
-        if (task !is JavaCompile) {
-            throw IllegalArgumentException("$task is not of type JavaCompile!")
-        }
+        require(task is JavaCompile) { "$task is not of type JavaCompile!" }
         task.doLast {
             task.ant.withGroovyBuilder {
                 "taskdef"(

@@ -8,26 +8,28 @@ package tasks
 import groovy.util.Node
 import groovy.util.XmlParser
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 import java.util.*
 
-open class WriteCopyrightToFile : DefaultTask() {
+abstract class WriteCopyrightToFile : DefaultTask() {
     @InputFile
-    var path = project.file("${project.rootDir}/.idea/copyright/apache.xml")
+    val path = project.file("${project.rootDir}/.idea/copyright/apache.xml")
 
-    @OutputFile
-    lateinit var outputFile: File
+    @get:OutputFile
+    abstract val outputFile: RegularFileProperty
 
-    @Input
-    var commented: Boolean = true
+    @get:Input
+    val commented: Property<Boolean> = project.objects.property(Boolean::class.java).convention(true)
 
     @TaskAction
     fun write() {
-        outputFile.writeText(if (commented) readCopyrightCommented() else readCopyright())
+        val file = outputFile.asFile.get()
+        file.writeText(if (commented.get()) readCopyrightCommented() else readCopyright())
     }
 
     private fun readCopyright(): String {

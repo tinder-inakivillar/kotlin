@@ -289,7 +289,7 @@ abstract class DownloadNativeCompiler : DefaultTask() {
 
 fun Test.setKotlinCompilerEnvironmentVariable() {
     /**
-     * TODO: This version hack on migrating period K/N into repository Kotlin, in new build infrostructure zero maintance claus isn't dropped,
+     * TODO: This version hack on migrating period K/N into repository Kotlin, in new build infrastructure zero maintenance clause isn't dropped,
      * so for old builds we need to keep this version to string representation till total switch on new infrostructure.
      */
     val konanVersion = object: CompilerVersion by NativeCompilerDownloader.DEFAULT_KONAN_VERSION {
