@@ -62,6 +62,8 @@ open class FirBodyResolveTransformer(
                 context.fileImportsScope += importingScopes
                 context.addNonLocalTowerDataElements(importingScopes.map { it.asTowerDataElement(isLocal = false) })
 
+                onBeforeFileContentResolution(file)
+
                 file.replaceResolvePhase(transformerPhase)
                 @Suppress("UNCHECKED_CAST")
                 transformDeclarationContent(file, data) as CompositeTransformResult<FirFile>
@@ -86,6 +88,8 @@ open class FirBodyResolveTransformer(
             return implicitTypeRef.compose()
         return data.expectedTypeRef.compose()
     }
+
+    open fun onBeforeFileContentResolution(file: FirFile) {}
 
     open fun onBeforeStatementResolution(statement: FirStatement) {}
 

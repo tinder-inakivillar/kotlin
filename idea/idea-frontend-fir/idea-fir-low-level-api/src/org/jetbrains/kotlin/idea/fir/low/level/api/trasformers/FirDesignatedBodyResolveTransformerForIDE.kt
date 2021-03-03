@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.idea.fir.low.level.api.trasformers
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.resolve.ResolutionMode
@@ -47,6 +48,10 @@ internal class FirDesignatedBodyResolveTransformerForIDE(
         }
 
         return super.transformDeclarationContent(declaration, data)
+    }
+
+    override fun onBeforeFileContentResolution(file: FirFile) {
+        towerDataContextCollector?.addFileContext(file, context.towerDataContext)
     }
 
     override fun onBeforeDeclarationContentResolve(declaration: FirDeclaration) {
