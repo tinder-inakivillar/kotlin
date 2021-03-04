@@ -21,20 +21,10 @@ data class JdkId(val explicit: Boolean, val majorVersion: JdkMajorVersion, var v
 
 fun Project.getConfiguredJdks(): List<JdkId> {
     val res = arrayListOf<JdkId>()
-    for (jdkMajorVersion in JdkMajorVersion.values()) {
-        val explicitJdkEnvVal = findProperty(jdkMajorVersion.name)?.toString()
-                ?: System.getenv(jdkMajorVersion.name)
-                ?: jdkAlternativeVarNames[jdkMajorVersion]?.mapNotNull { System.getenv(it) }?.firstOrNull()
-                ?: continue
-        val explicitJdk = Paths.get(explicitJdkEnvVal).toRealPath().toFile()
-        if (!explicitJdk.isDirectory) {
-            throw GradleException("Invalid environment value $jdkMajorVersion: $explicitJdkEnvVal, expecting JDK home path")
-        }
-        res.add(JdkId(true, jdkMajorVersion, "X", explicitJdk))
-    }
-    if (res.size < JdkMajorVersion.values().size) {
-        res.discoverJdks(this)
-    }
+    val explicitJdk = Paths.get(project.properties["JAVA_HOME"].toString()).toRealPath().toFile()
+    val explicitJdk9 = Paths.get(project.properties["JDK_9"].toString()).toRealPath().toFile()
+    res.add(JdkId(true, JdkMajorVersion.JDK_18, "X", explicitJdk))
+    res.add(JdkId(true, JdkMajorVersion.JDK_9, "X", explicitJdk9))
     return res
 }
 
@@ -105,19 +95,9 @@ private val macOsJavaHomeOutRegexes = listOf(Regex("""\s+(\S+),\s+(\S+):\s+".*?"
                                              Regex("""\s+(\S+)\s+\((.*?)\):\s+(.+)"""))
 
 fun MutableCollection<JdkId>.discoverJdksOnMacOS(project: Project) {
-    val procBuilder = ProcessBuilder("/usr/libexec/java_home", "-V").redirectErrorStream(true)
-    val process = procBuilder.start()
-    val retCode = process.waitFor()
-    if (retCode != 0) throw GradleException("Unable to run 'java_home', return code $retCode")
-    process.inputStream.bufferedReader().forEachLine { line ->
-        for (rex in macOsJavaHomeOutRegexes) {
-            val matchResult = rex.matchEntire(line)
-            if (matchResult != null) {
-                addIfBetter(project, matchResult.groupValues[1], matchResult.groupValues[0], File(matchResult.groupValues[3]))
-                break
-            }
-        }
-    }
+    addIfBetter(project, "18","JDK_18",File(project.properties["JAVA_HOME"] as String))
+    addIfBetter(project, "19","JDK_19",File(project.properties["JDK_9"] as String))
+
 }
 
 private val unixConventionalJdkLocations = listOf(
@@ -132,22 +112,8 @@ private val unixConventionalJdkLocations = listOf(
 private val unixConventionalJdkDirRex = Regex("jdk|jre|java|zulu")
 
 fun MutableCollection<JdkId>.discoverJdksOnUnix(project: Project) {
-    for (loc in unixConventionalJdkLocations) {
-        val installedJdks = File(loc).listFiles { dir ->
-            dir.isDirectory &&
-            unixConventionalJdkDirRex.containsMatchIn(dir.name) &&
-            fileFrom(dir, "bin", "java").isFile
-        } ?: continue
-        for (dir in installedJdks) {
-            val versionMatch = javaVersionRegex.find(dir.name)
-            if (versionMatch == null) {
-                project.logger.info("Unable to extract version from possible JDK dir: $dir")
-            }
-            else {
-                addIfBetter(project, versionMatch.value, dir.name, dir)
-            }
-        }
-    }
+    addIfBetter(project, "18","JDK_18",File(project.properties["JAVA_HOME"] as String))
+    addIfBetter(project, "19","JDK_19",File(project.properties["JDK_9"] as String))
 }
 
 private val windowsConventionalJdkRegistryPaths = listOf(

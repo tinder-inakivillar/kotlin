@@ -10,6 +10,8 @@ plugins {
     id("jps-compatible")
 }
 
+group = "com.tinder.labs.kotlin"
+
 apply(from = "functionalTest.gradle.kts")
 val functionalTestImplementation by configurations
 
@@ -34,21 +36,20 @@ pill {
 }
 
 dependencies {
-    compile(project(":kotlin-gradle-plugin-api"))
-    compile(project(":kotlin-gradle-plugin-model"))
-    compileOnly(project(":compiler"))
+    compile("org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.4.31")
+    compile("org.jetbrains.kotlin:kotlin-gradle-plugin-model:1.4.31")
+    compileOnly("org.jetbrains.kotlin:kotlin-compiler:1.4.31")
     compileOnly(project(":compiler:incremental-compilation-impl"))
     compileOnly(project(":daemon-common"))
-
-    compile(kotlinStdlib())
-    compile(project(":kotlin-util-klib"))
+    compile("org.jetbrains.kotlin:kotlin-stdlib:1.4.31")
+    compile("org.jetbrains.kotlin:kotlin-util-klib:1.4.31")
     compileOnly(project(":native:kotlin-native-utils"))
     compileOnly(project(":kotlin-reflect-api"))
-    compileOnly(project(":kotlin-android-extensions"))
+    compileOnly("org.jetbrains.kotlin:kotlin-android-extensions:1.4.31")
     compileOnly(project(":kotlin-build-common"))
-    compileOnly(project(":kotlin-compiler-runner"))
+    compileOnly("org.jetbrains.kotlin:kotlin-compiler-runner:1.4.31")
     compileOnly(project(":kotlin-annotation-processing"))
-    compileOnly(project(":kotlin-annotation-processing-gradle"))
+    compileOnly("org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.4.31")
     compileOnly(project(":kotlin-scripting-compiler"))
     compileOnly(project(":kotlin-gradle-statistics"))
     embedded(project(":kotlin-gradle-statistics"))
@@ -68,13 +69,12 @@ dependencies {
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 
-    runtimeOnly(projectRuntimeJar(":kotlin-compiler-embeddable"))
-    runtimeOnly(projectRuntimeJar(":kotlin-annotation-processing-gradle"))
-    runtimeOnly(projectRuntimeJar(":kotlin-android-extensions"))
-    runtimeOnly(projectRuntimeJar(":kotlin-compiler-runner"))
-    runtimeOnly(projectRuntimeJar(":kotlin-scripting-compiler-embeddable"))
-    runtimeOnly(projectRuntimeJar(":kotlin-scripting-compiler-impl-embeddable"))
-    runtimeOnly(project(":kotlin-reflect"))
+    runtimeOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-android-extensions:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-compiler-runner:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.4.31")
 
     jarContents(compileOnly(intellijDep()) {
         includeJars("asm-all", "gson", "serviceMessages", rootProject = rootProject)

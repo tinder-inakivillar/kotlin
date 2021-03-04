@@ -96,10 +96,7 @@ fun Project.kotlinDep(artifactBaseName: String, version: String, classifier: Str
     listOfNotNull("org.jetbrains.kotlin:kotlin-$artifactBaseName:$version", classifier).joinToString(":")
 
 fun Project.kotlinStdlib(suffix: String? = null, classifier: String? = null): Any {
-    return if (kotlinBuildProperties.useBootstrapStdlib)
-        kotlinDep(listOfNotNull("stdlib", suffix).joinToString("-"), bootstrapKotlinVersion, classifier)
-    else
-        dependencies.project(listOfNotNull(":kotlin-stdlib", suffix).joinToString("-"), classifier)
+    return kotlinDep(listOfNotNull("stdlib", suffix).joinToString("-"), "1.4.31", classifier)
 }
 
 fun Project.kotlinBuiltins(): Any = kotlinBuiltins(forJvm = false)
