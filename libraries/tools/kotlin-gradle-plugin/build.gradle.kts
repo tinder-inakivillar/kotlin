@@ -10,7 +10,7 @@ plugins {
     id("jps-compatible")
 }
 
-group = "com.tinder.labs.kotlin"
+group = "com.tinder.labs"
 
 apply(from = "functionalTest.gradle.kts")
 val functionalTestImplementation by configurations
@@ -41,6 +41,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-compiler:1.4.31")
     compileOnly(project(":compiler:incremental-compilation-impl"))
     compileOnly(project(":daemon-common"))
+
     compile("org.jetbrains.kotlin:kotlin-stdlib:1.4.31")
     compile("org.jetbrains.kotlin:kotlin-util-klib:1.4.31")
     compileOnly(project(":native:kotlin-native-utils"))
@@ -74,6 +75,7 @@ dependencies {
     runtimeOnly("org.jetbrains.kotlin:kotlin-android-extensions:1.4.31")
     runtimeOnly("org.jetbrains.kotlin:kotlin-compiler-runner:1.4.31")
     runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.4.31")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:1.4.31")
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.4.31")
 
     jarContents(compileOnly(intellijDep()) {
